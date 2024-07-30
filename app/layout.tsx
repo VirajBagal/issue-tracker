@@ -33,6 +33,6 @@ export default function RootLayout({
           </main>
         </Theme>
       </body>
-    </html>
+    </html >
   )
 }
