@@ -6,7 +6,7 @@ import "easymde/dist/easymde.min.css";
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod'
 import { createIssueSchema } from '@/app/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,6 +33,7 @@ const newIssuePage = () => {
         }
 
     }
+
     return (
         <div className='max-w-xl px-4 '>
             {
