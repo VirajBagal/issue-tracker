@@ -32,6 +32,8 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
             else
                 await axios.post('/api/issues', data)
             router.push('/issues')
+            // reset the router cache by refreshing. It lasts for 30 seconds on dynamic page and 5 minutes on static page
+            router.refresh()
 
         } catch (error) {
             setSubmitting(false)

@@ -1,9 +1,8 @@
 import React from 'react'
 import { Table } from '@radix-ui/themes'
 import prisma from '@/prisma/client'
-import IssueStatusBadge from '../components/IssueStatusBadge'
+import { Link, IssueStatusBadge } from '@/app/components'
 import IssueActionsPage from './IssueActions'
-import Link from '../components/Link'
 
 const IssuesPage = async () => {
     const issues = await prisma.issue.findMany();
@@ -23,9 +22,6 @@ const IssuesPage = async () => {
                         <Table.Row key={issue.id}>
                             <Table.Cell>
                                 <Link href={`/issues/${issue.id}`} children={issue.title} />
-                                {/* <Link href={`/issues/${issue.id}`}>
-                                    {issue.title}
-                                </Link> */}
                                 <div className='block md:hidden'><IssueStatusBadge status={issue.status} /></div>
                             </Table.Cell>
                             <Table.Cell className='hidden md:table-cell'><IssueStatusBadge status={issue.status} /></Table.Cell>
@@ -37,5 +33,5 @@ const IssuesPage = async () => {
 
     )
 }
-
+export const dynamic = 'force-dynamic';
 export default IssuesPage
