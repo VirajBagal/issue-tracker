@@ -3,12 +3,15 @@ import { Table } from '@radix-ui/themes'
 import prisma from '@/prisma/client'
 import { Link, IssueStatusBadge } from '@/app/components'
 import IssueActionsPage from './IssueActions'
+import { authOptions } from "@/app/auth/AuthOptions";
+import { getServerSession } from 'next-auth'
 
 const IssuesPage = async () => {
+    const session = await getServerSession(authOptions);
     const issues = await prisma.issue.findMany();
     return (
         <div>
-            <IssueActionsPage />
+            {session && <IssueActionsPage />}
             <Table.Root variant='surface'>
                 <Table.Header>
                     <Table.Row>
