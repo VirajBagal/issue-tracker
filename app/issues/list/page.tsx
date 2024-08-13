@@ -5,10 +5,27 @@ import { Link, IssueStatusBadge } from '@/app/components'
 import IssueActionsPage from './IssueActions'
 import { authOptions } from "@/app/auth/AuthOptions";
 import { getServerSession } from 'next-auth'
+import { Status } from '@prisma/client'
 
-const IssuesPage = async () => {
+interface Props {
+  searchParams: { status: Status }
+}
+
+const IssuesPage = async ({ searchParams }: Props) => {
     const session = await getServerSession(authOptions);
-    const issues = await prisma.issue.findMany();
+    const status = Object.values(Status).includes(searchParams.status)
+      ? searchParams.status
+      : undefined;
+    
+    const issues = await prisma.issue.findMany({
+      where: {
+        status
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
     return (
         <div>
             {session && <IssueActionsPage />}
