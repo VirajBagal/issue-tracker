@@ -8,12 +8,14 @@ import { getServerSession } from 'next-auth'
 import { Status } from '@prisma/client'
 import { ArrowUpIcon } from '@radix-ui/react-icons'
 import NextLink from 'next/link'
+import { Pagination } from '@/app/components/Pagination'
 
 interface Props {
   searchParams: { 
     status: Status;
     orderBy: string;
     orderDirection: 'asc' | 'desc';
+    page: string;
   }
 }
 
@@ -30,13 +32,16 @@ const IssuesPage = async ({ searchParams }: Props) => {
       : undefined;
     
     const orderDirection = ['asc', 'desc'].includes(searchParams.orderDirection as string)
-    ? searchParams.orderDirection as 'asc' | 'desc'
-    : undefined;
+      ? searchParams.orderDirection as 'asc' | 'desc'
+      : undefined;
 
     const orderBy = columns.some(column => column.value === searchParams.orderBy as string)
       ? searchParams.orderBy
       : undefined;
 
+
+    const page = parseInt(searchParams.page) || 1;
+    const pageSize = 5;
 
     const issues = await prisma.issue.findMany({
       where: {
@@ -44,8 +49,12 @@ const IssuesPage = async ({ searchParams }: Props) => {
       },
       orderBy: {
         [orderBy!]: orderDirection
-      }
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
+
+    const issueCount = await prisma.issue.count({ where: { status } });
 
     return (
         <div>
@@ -86,6 +95,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
                         </Table.Row>)}
                 </Table.Body>
             </Table.Root>
+            <Pagination 
+              currentPage={page} 
+              pageSize={pageSize} 
+              totalIssues={issueCount} 
+            />
         </div>
     )
 }
