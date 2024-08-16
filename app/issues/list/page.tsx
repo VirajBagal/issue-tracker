@@ -1,14 +1,12 @@
 import React from 'react'
-import { Table } from '@radix-ui/themes'
 import prisma from '@/prisma/client'
-import { Link, IssueStatusBadge } from '@/app/components'
 import IssueActionsPage from './IssueActions'
 import { authOptions } from "@/app/auth/AuthOptions";
 import { getServerSession } from 'next-auth'
 import { Status } from '@prisma/client'
-import { ArrowUpIcon } from '@radix-ui/react-icons'
-import NextLink from 'next/link'
 import { Pagination } from '@/app/components/Pagination'
+import IssueTable, { columns } from './IssueTable'
+import { Flex } from '@radix-ui/themes';
 
 interface Props {
   searchParams: { 
@@ -18,12 +16,6 @@ interface Props {
     page: string;
   }
 }
-
-const columns = [
-  { label: 'Issue', value: 'title' },
-  { label: 'Status', value: 'status', className: 'hidden md:table-cell' },
-  { label: 'Created', value: 'createdAt', className: 'hidden md:table-cell' },
-];
 
 const IssuesPage = async ({ searchParams }: Props) => {
     const session = await getServerSession(authOptions);
@@ -57,50 +49,15 @@ const IssuesPage = async ({ searchParams }: Props) => {
     const issueCount = await prisma.issue.count({ where: { status } });
 
     return (
-        <div>
+        <Flex gap = '3' direction='column'>
             {session && <IssueActionsPage />}
-            <Table.Root variant='surface'>
-                <Table.Header>
-                    <Table.Row>
-                        {columns.map(column => (
-                            <Table.ColumnHeaderCell key={column.value} className={column.className}>
-                                <NextLink
-                                    href={{
-                                        query: { 
-                                            ...searchParams,
-                                            orderBy: column.value, 
-                                            orderDirection: column.value === orderBy && orderDirection === 'asc' ? 'desc' : 'asc',
-                                        }
-                                    }}
-                                    className="flex items-center gap-1"
-                                >
-                                    {column.label}
-                                    {column.value === orderBy && (
-                                        <ArrowUpIcon className={orderDirection === 'desc' ? 'transform rotate-180' : ''} />
-                                    )}
-                                </NextLink>
-                            </Table.ColumnHeaderCell>
-                        ))}
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {issues.map(issue =>
-                        <Table.Row key={issue.id}>
-                            <Table.Cell>
-                                <Link href={`/issues/${issue.id}`} children={issue.title} />
-                                <div className='block md:hidden'><IssueStatusBadge status={issue.status} /></div>
-                            </Table.Cell>
-                            <Table.Cell className='hidden md:table-cell'><IssueStatusBadge status={issue.status} /></Table.Cell>
-                            <Table.Cell className='hidden md:table-cell'>{issue.createdAt.toDateString()}</Table.Cell>
-                        </Table.Row>)}
-                </Table.Body>
-            </Table.Root>
+            <IssueTable searchParams={searchParams} issues={issues} />
             <Pagination 
               currentPage={page} 
               pageSize={pageSize} 
               totalIssues={issueCount} 
             />
-        </div>
+        </Flex>
     )
 }
 

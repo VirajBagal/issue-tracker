@@ -4,7 +4,7 @@ import IssueStatusFilter from '@/app/issues/list/IssueStatusFilter'
 
 const IssueActionsPage = () => {
     return (
-        <div className='mb-4 flex items-center justify-between'>
+        <div className='flex items-center justify-between'>
             <IssueStatusFilter />
             <Button>
                 <Link href={"/issues/new"}>Create new issue</Link>
