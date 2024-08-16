@@ -1,10 +1,16 @@
-import { Button } from '@radix-ui/themes'
-import Image from 'next/image'
+
+import { Pagination } from './components/Pagination'
+
 
 export default function Home() {
+  const totalIssues = 10; // Replace with your actual total pages
+  const pageSize = 5
+  const currentPage = 1
   return (
-    <div>
-      <Button>Click me</Button>
-    </div>
+    <Pagination 
+    currentPage={currentPage}
+    totalIssues={totalIssues}
+    pageSize={pageSize}
+    />
   )
 }
