@@ -1,32 +1,19 @@
 import { Status } from '@prisma/client';
 import { Card, Text } from '@radix-ui/themes'
 import Link from 'next/link';
-import prisma from '@/prisma/client';
 
-async function getIssueCounts() {
-  const statuses = Object.values(Status);
-  const counts = await Promise.all(
-    statuses.map(async (status) => ({
-      status,
-      count: await prisma.issue.count({ where: { status } }),
-    }))
-  );
-  return counts;
-}
+interface IssueChartProps {
+    open: number;
+    inProgress: number;
+    done: number;
+  }
 
-export default async function IssueSummary() {
-  const issueCounts = await getIssueCounts();
-  const statusLabels: {status: Status, label: string}[] = [
-    { status: 'OPEN', label: 'Open Issues' },
-    { status: 'IN_PROGRESS', label: 'In Progress Issues' },
-    { status: 'DONE', label: 'Closed Issues' },
+export default async function IssueSummary( { open, inProgress, done }: IssueChartProps) {
+  const summaryData: {status: Status, label: string, count: number}[] = [
+    { status: 'OPEN', label: 'Open Issues', count: open },
+    { status: 'IN_PROGRESS', label: 'In Progress Issues', count: inProgress },
+    { status: 'DONE', label: 'Closed Issues', count: done },
   ];
-
-  const summaryData = statusLabels.map(({ status, label }) => ({
-    status,
-    label,
-    count: issueCounts.find(count => count.status === status)?.count || 0,
-  }));
 
   return (
     <div className="grid grid-cols-3 gap-4">
