@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import prisma from '@/prisma/client'
 import { Box, Flex, Grid } from '@radix-ui/themes'
 import { notFound } from 'next/navigation'
@@ -13,10 +14,15 @@ interface Props {
     params: { id: string }
 }
 
+// Cache the issue fetching function
+const getIssue = cache((id: number) => 
+  prisma.issue.findUnique({
+    where: { id }
+  })
+)
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) }
-  });
+  const issue = await getIssue(parseInt(params.id));
 
   return {
     title: issue ? `Issue ${issue.id} - ${issue.title}` : 'Issue Not Found',
@@ -26,9 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const IssueDetailsPage = async ({ params }: Props) => {
     const session = await getServerSession(authOptions);
-    const issue = await prisma.issue.findUnique({
-        where: { id: parseInt(params.id) }
-    })
+    const issue = await getIssue(parseInt(params.id));
 
     if (!issue)
         notFound();
